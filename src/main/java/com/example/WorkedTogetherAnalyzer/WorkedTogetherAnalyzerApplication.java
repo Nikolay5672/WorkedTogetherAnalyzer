@@ -10,4 +10,6 @@ public class WorkedTogetherAnalyzerApplication {
 		SpringApplication.run(WorkedTogetherAnalyzerApplication.class, args);
 	}
 
+	//TODO everything
+
 }
