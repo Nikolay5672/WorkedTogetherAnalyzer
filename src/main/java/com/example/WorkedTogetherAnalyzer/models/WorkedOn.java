@@ -1,10 +1,14 @@
 package com.example.WorkedTogetherAnalyzer.models;
 
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.util.Date;
+
 @Entity
 @Table(name = "WorkedOn")
-public class WorkedOn {
+@IdClass(WorkedOnId.class)
+public class WorkedOn implements Serializable {
 
     @Id
     @Column(name = "empID")
@@ -66,3 +70,4 @@ public class WorkedOn {
         this.endDate = endDate;
     }
 }
+
