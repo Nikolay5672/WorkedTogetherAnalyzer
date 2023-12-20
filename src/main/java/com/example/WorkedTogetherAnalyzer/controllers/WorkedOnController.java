@@ -27,7 +27,7 @@ public class WorkedOnController {
         return workedOnService.getAllWorkedOnEntries();
     }
 
-    @GetMapping("/get/{empId}/{projectId}")
+    @GetMapping("/{empId}/{projectId}")
     public ResponseEntity<WorkedOn> getWorkedOnEntryById(@PathVariable Long empId, @PathVariable Long projectId) {
         WorkedOnId workedOnId = new WorkedOnId(empId, projectId);
         Optional<WorkedOn> workedOnEntry = workedOnService.getWorkedOnEntryById(workedOnId);
@@ -35,13 +35,13 @@ public class WorkedOnController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<WorkedOn> createWorkedOnEntry(@RequestBody WorkedOn workedOn) {
         WorkedOn savedWorkedOn = workedOnService.saveWorkedOnEntry(workedOn);
         return new ResponseEntity<>(savedWorkedOn, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{empId}/{projectId}")
+    @PutMapping("/{empId}/{projectId}")
     public ResponseEntity<WorkedOn> updateWorkedOnEntry(
             @PathVariable Long empId, @PathVariable Long projectId, @RequestBody WorkedOn updatedWorkedOn) {
         WorkedOnId workedOnId = new WorkedOnId(empId, projectId);
@@ -56,7 +56,7 @@ public class WorkedOnController {
         }
     }
 
-    @DeleteMapping("/delete/{empId}/{projectId}")
+    @DeleteMapping("/{empId}/{projectId}")
     public ResponseEntity<Void> deleteWorkedOnEntry(@PathVariable Long empId, @PathVariable Long projectId) {
         WorkedOnId workedOnId = new WorkedOnId(empId, projectId);
         Optional<WorkedOn> existingWorkedOn = workedOnService.getWorkedOnEntryById(workedOnId);

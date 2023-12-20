@@ -11,21 +11,21 @@ import java.util.Date;
 public class WorkedOn implements Serializable {
 
     @Id
-    @Column(name = "empID")
-    private Long empID;
+    @Column(name = "empId")  // Match the name in WorkedOnId
+    private Long empId;
 
     @Id
-    @Column(name = "projectID")
-    private Long projectID;
+    @Column(name = "projectId")  // Match the name in WorkedOnId
+    private Long projectId;
 
     @ManyToOne
-    @MapsId("empID")
-    @JoinColumn(name = "empID")
+    @MapsId("empId")
+    @JoinColumn(name = "empId")
     private Employee employee;
 
     @ManyToOne
-    @MapsId("projectID")
-    @JoinColumn(name = "projectID")
+    @MapsId("projectId")
+    @JoinColumn(name = "projectId")
     private Project project;
 
     @Column(name = "startDate")
@@ -40,8 +40,8 @@ public class WorkedOn implements Serializable {
     }
 
     public WorkedOn(Long empID, Long projectID, Date startDate, Date endDate) {
-        this.empID = empID;
-        this.projectID = projectID;
+        this.empId = empID;
+        this.projectId = projectID;
         this.startDate = startDate;
         this.endDate = endDate;
     }
@@ -64,6 +64,38 @@ public class WorkedOn implements Serializable {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public Long getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(Long empId) {
+        this.empId = empId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     // Rest of the getters and setters

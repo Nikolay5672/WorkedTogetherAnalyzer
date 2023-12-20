@@ -1,4 +1,4 @@
-package com.example.WorkedTogetherAnalyzer.main;
+package com.example.WorkedTogetherAnalyzer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,6 +8,7 @@ public class WorkedTogetherAnalyzerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(WorkedTogetherAnalyzerApplication.class, args);
+
 	}
 
 	//TODO everything

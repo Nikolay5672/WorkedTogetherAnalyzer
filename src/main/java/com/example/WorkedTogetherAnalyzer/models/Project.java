@@ -14,19 +14,15 @@ public class Project {
     private Date dateFrom;
     @Column
     private Date dateTo;
-    @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
 
     public Project() {
         // Default constructor for JPA
     }
 
-    public Project(Long projectID, Date dateFrom, Date dateTo, Employee employee) {
+    public Project(Long projectID, Date dateFrom, Date dateTo) {
         this.projectID = projectID;
         this.dateFrom = dateFrom;
         this.dateTo = dateTo;
-        this.employee = employee;
     }
     // Constructors, getters, and setters
 
@@ -41,10 +37,6 @@ public class Project {
         return dateTo;
     }
 
-    public Employee getEmployee() {
-        return employee;
-    }
-
     public void setProjectID(Long projectID) {
         this.projectID = projectID;
     }
@@ -55,9 +47,5 @@ public class Project {
 
     public void setDateTo(Date dateTo) {
         this.dateTo = dateTo;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
     }
 }

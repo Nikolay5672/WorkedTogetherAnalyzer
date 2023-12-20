@@ -26,20 +26,20 @@ public class EmployeeController {
         return employeeService.getAllEmployees();
     }
 
-    @GetMapping("/get/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long employeeId) {
         Optional<Employee> employee = employeeService.getEmployeeById(employeeId);
         return employee.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
         Employee savedEmployee = employeeService.saveEmployee(employee);
         return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{employeeId}")
+    @PutMapping("/{employeeId}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long employeeId, @RequestBody Employee updatedEmployee) {
         Optional<Employee> existingEmployee = employeeService.getEmployeeById(employeeId);
         if (existingEmployee.isPresent()) {
@@ -51,7 +51,7 @@ public class EmployeeController {
         }
     }
 
-    @DeleteMapping("/delete/{employeeId}")
+    @DeleteMapping("/{employeeId}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long employeeId) {
         Optional<Employee> existingEmployee = employeeService.getEmployeeById(employeeId);
         if (existingEmployee.isPresent()) {

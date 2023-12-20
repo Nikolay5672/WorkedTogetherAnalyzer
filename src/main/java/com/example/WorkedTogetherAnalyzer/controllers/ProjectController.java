@@ -26,20 +26,20 @@ public class ProjectController {
         return projectService.getAllProjects();
     }
 
-    @GetMapping("/get/{projectId}")
+    @GetMapping("/{projectId}")
     public ResponseEntity<Project> getProjectById(@PathVariable Long projectId) {
         Optional<Project> project = projectService.getProjectById(projectId);
         return project.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Project> createProject(@RequestBody Project project) {
         Project savedProject = projectService.saveProject(project);
         return new ResponseEntity<>(savedProject, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{projectId}")
+    @PutMapping("/{projectId}")
     public ResponseEntity<Project> updateProject(@PathVariable Long projectId, @RequestBody Project updatedProject) {
         Optional<Project> existingProject = projectService.getProjectById(projectId);
         if (existingProject.isPresent()) {
@@ -51,7 +51,7 @@ public class ProjectController {
         }
     }
 
-    @DeleteMapping("/delete/{projectId}")
+    @DeleteMapping("/{projectId}")
     public ResponseEntity<Void> deleteProject(@PathVariable Long projectId) {
         Optional<Project> existingProject = projectService.getProjectById(projectId);
         if (existingProject.isPresent()) {
