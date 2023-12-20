@@ -12,11 +12,21 @@ public class WorkedOn implements Serializable {
 
     @Id
     @Column(name = "empID")
-    private int empID;
+    private Long empID;
 
     @Id
     @Column(name = "projectID")
-    private int projectID;
+    private Long projectID;
+
+    @ManyToOne
+    @MapsId("empID")
+    @JoinColumn(name = "empID")
+    private Employee employee;
+
+    @ManyToOne
+    @MapsId("projectID")
+    @JoinColumn(name = "projectID")
+    private Project project;
 
     @Column(name = "startDate")
     private Date startDate;
@@ -29,7 +39,7 @@ public class WorkedOn implements Serializable {
     public WorkedOn() {
     }
 
-    public WorkedOn(int empID, int projectID, Date startDate, Date endDate) {
+    public WorkedOn(Long empID, Long projectID, Date startDate, Date endDate) {
         this.empID = empID;
         this.projectID = projectID;
         this.startDate = startDate;
@@ -38,36 +48,25 @@ public class WorkedOn implements Serializable {
 
     // Getters and setters
 
-    public int getEmpID() {
-        return empID;
+    // Add getters and setters for Employee and Project
+
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setEmpID(int empID) {
-        this.empID = empID;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
-    public int getProjectID() {
-        return projectID;
+    public Project getProject() {
+        return project;
     }
 
-    public void setProjectID(int projectID) {
-        this.projectID = projectID;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
+    // Rest of the getters and setters
 }
+
 
