@@ -2,79 +2,110 @@ package com.example.WorkedTogetherAnalyzer.services;
 
 import com.example.WorkedTogetherAnalyzer.models.WorkedOn;
 import com.example.WorkedTogetherAnalyzer.models.WorkedTogetherResult;
-import com.example.WorkedTogetherAnalyzer.repositories.EmployeeRepository;
 import com.example.WorkedTogetherAnalyzer.repositories.WorkedOnRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class WorkedTogetherService {
 
     private final WorkedOnRepository workedOnRepository;
-    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public WorkedTogetherService(WorkedOnRepository workedOnRepository, EmployeeRepository employeeRepository) {
+    public WorkedTogetherService(WorkedOnRepository workedOnRepository) {
         this.workedOnRepository = workedOnRepository;
-        this.employeeRepository = employeeRepository;
     }
 
     public List<WorkedTogetherResult> findMostTimeWorkedPairs() {
         List<WorkedOn> allWorkedOnEntries = workedOnRepository.findAll();
-        Map<Long, Map<Long, Long>> projectEmployeeDaysWorkedMap = new HashMap<>();
+        Map<Long, Map<Long, List<WorkedOn>>> projectEmployeeWorkedEntriesMap = new HashMap<>();
 
+        // Populate projectEmployeeWorkedEntriesMap with worked entries on each project for each employee
         for (WorkedOn entry : allWorkedOnEntries) {
             Long projectId = entry.getProject().getId();
             Long empId = entry.getEmployee().getId();
-            Long daysWorked = computeDaysWorked(entry);
 
-            projectEmployeeDaysWorkedMap
+            projectEmployeeWorkedEntriesMap
                     .computeIfAbsent(projectId, k -> new HashMap<>())
-                    .merge(empId, daysWorked, Long::sum);
+                    .computeIfAbsent(empId, k -> new ArrayList<>())
+                    .add(entry);
         }
 
         List<WorkedTogetherResult> result = new ArrayList<>();
 
-        for (Map.Entry<Long, Map<Long, Long>> projectEntry : projectEmployeeDaysWorkedMap.entrySet()) {
+        // Find the pair of employees who worked the most time together on each project
+        for (Map.Entry<Long, Map<Long, List<WorkedOn>>> projectEntry : projectEmployeeWorkedEntriesMap.entrySet()) {
             Long projectId = projectEntry.getKey();
-            Map<Long, Long> employeeDaysWorkedMap = projectEntry.getValue();
+            Map<Long, List<WorkedOn>> employeeWorkedEntriesMap = projectEntry.getValue();
 
-            // Find the pair of employees who worked the longest on the current project
-            Map.Entry<Long, Long> maxEntry = Collections.max(
-                    employeeDaysWorkedMap.entrySet(),
-                    Map.Entry.comparingByValue()
-            );
+            // Find the pair of employees who worked the most time together on the current project
+            WorkedTogetherResult maxResult = findMaxWorkedTogetherPair(employeeWorkedEntriesMap, projectId);
 
-            Long employee1 = maxEntry.getKey();
-            Long totalDaysWorked = maxEntry.getValue();
-
-            // Find the other employee who worked on the project
-            employeeDaysWorkedMap.remove(employee1);
-            Long employee2 = Collections.max(employeeDaysWorkedMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-
-            result.add(new WorkedTogetherResult(projectId, employee1, employee2, totalDaysWorked));
+            // Add the result to the list
+            result.add(maxResult);
         }
 
         return result;
     }
 
-    private long computeDaysWorked(WorkedOn entry) {
-        // Convert java.util.Date to LocalDate
-        Instant startInstant = entry.getStartDate().toInstant();
-        LocalDate startDate = startInstant.atZone(ZoneId.systemDefault()).toLocalDate();
+    private WorkedTogetherResult findMaxWorkedTogetherPair(Map<Long, List<WorkedOn>> employeeWorkedEntriesMap, Long projectId) {
+        WorkedTogetherResult maxResult = null;
+        long maxDaysWorked = 0;
 
-        Instant endInstant = entry.getEndDate() != null
-                ? entry.getEndDate().toInstant()
-                : LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant();
+        List<Long> employeeIds = new ArrayList<>(employeeWorkedEntriesMap.keySet());
 
-        // Using ChronoUnit to calculate the difference in days
-        return ChronoUnit.DAYS.between(startDate, endInstant.atZone(ZoneId.systemDefault()).toLocalDate());
+        for (int i = 0; i < employeeIds.size() - 1; i++) {
+            for (int j = i + 1; j < employeeIds.size(); j++) {
+                Long employeeId1 = employeeIds.get(i);
+                Long employeeId2 = employeeIds.get(j);
+
+                long totalDaysWorked = computeTotalDaysWorked(employeeWorkedEntriesMap.get(employeeId1), employeeWorkedEntriesMap.get(employeeId2));
+
+                if (totalDaysWorked > maxDaysWorked) {
+                    maxDaysWorked = totalDaysWorked;
+                    maxResult = new WorkedTogetherResult(employeeId1, employeeId2, projectId, totalDaysWorked);
+                }
+            }
+        }
+
+        return maxResult;
     }
 
+    private long computeTotalDaysWorked(List<WorkedOn> entries1, List<WorkedOn> entries2) {
+        long totalDaysWorked = 0;
+
+        for (WorkedOn entry1 : entries1) {
+            for (WorkedOn entry2 : entries2) {
+                totalDaysWorked += computeDaysWorked(entry1, entry2);
+            }
+        }
+
+        return totalDaysWorked;
+    }
+
+    private long computeDaysWorked(WorkedOn entry1, WorkedOn entry2) {
+        LocalDate startDate1 = entry1.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate endDate1 = entry1.getEndDate() != null ? entry1.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : LocalDate.now();
+
+        LocalDate startDate2 = entry2.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate endDate2 = entry2.getEndDate() != null ? entry2.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : LocalDate.now();
+
+        // Find the non-overlapping period
+        LocalDate overlapStart = startDate1.isAfter(startDate2) ? startDate1 : startDate2;
+        LocalDate overlapEnd = endDate1.isBefore(endDate2) ? endDate1 : endDate2;
+
+        // Calculate the difference in days for the non-overlapping period
+        long daysWorked = ChronoUnit.DAYS.between(overlapStart, overlapEnd);
+
+        // Ensure non-negative result
+        return Math.max(0, daysWorked);
+    }
 }
