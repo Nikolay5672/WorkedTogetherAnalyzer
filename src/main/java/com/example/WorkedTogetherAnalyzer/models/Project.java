@@ -1,6 +1,9 @@
 package com.example.WorkedTogetherAnalyzer.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Past;
+
 import java.util.Date;
 
 @Entity
@@ -10,9 +13,14 @@ public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectID;
+
     @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Past(message = "Date must be in the past")
     private Date dateFrom;
-    @Column
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Future(message = "Date must be in the future")
     private Date dateTo;
 
     public Project() {

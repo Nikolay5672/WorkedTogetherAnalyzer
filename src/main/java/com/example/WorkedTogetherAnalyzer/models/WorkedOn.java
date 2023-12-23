@@ -1,6 +1,8 @@
 package com.example.WorkedTogetherAnalyzer.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Past;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -29,9 +31,13 @@ public class WorkedOn implements Serializable {
     private Project project;
 
     @Column(name = "startDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Past(message = "Start date must be in the past")
     private Date startDate;
 
     @Column(name = "endDate")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Future(message = "Date must be in the future")
     private Date endDate;
 
     // Constructors, getters, and setters

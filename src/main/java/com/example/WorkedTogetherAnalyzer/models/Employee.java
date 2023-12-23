@@ -1,6 +1,8 @@
 package com.example.WorkedTogetherAnalyzer.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 
 import java.util.Date;
 
@@ -9,20 +11,34 @@ import java.util.Date;
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "empID")
     private Long empID;
-    @Column(nullable = false)
+
+    @NotBlank(message = "First name is required")
+    @Size(max = 50, message = "First name must be at most 50 characters")
+    @Column(name = "firstName")
     private String firstName;
-    @Column(nullable = false)
+
+    @NotBlank(message = "Last name is required")
+    @Size(max = 50, message = "Last name must be at most 50 characters")
+    @Column(name = "lastName")
     private String lastName;
-    @Column
-    private String email;
-    @Column
+
+    @NotBlank(message = "Date of birth is required")
+    @Past(message = "Date of birth must be in the past")
+    @Column(name = "dateOfBirth")
     private Date dateOfBirth;
+
+    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email is required")
+    @Column(name = "email", unique = true)
+    private String email;
 
     // Constructors
 
     public Employee() {
         // Default constructor for JPA
+        dateOfBirth = null;
     }
 
     public Employee(Long empID, String firstName, String lastName, String email, Date dateOfBirth) {

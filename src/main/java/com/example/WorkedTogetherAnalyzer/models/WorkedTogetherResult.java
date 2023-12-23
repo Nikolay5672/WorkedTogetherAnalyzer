@@ -1,10 +1,24 @@
 package com.example.WorkedTogetherAnalyzer.models;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 public class WorkedTogetherResult {
 
+    @NotBlank(message = "Project ID is required")
+    @Positive(message = "Project ID must be a positive value")
     private Long projectID;
+
+    @NotBlank(message = "Employee 1 ID is required")
+    @Positive(message = "Employee 1 ID must be a positive value")
     private Long employee1;
+
+    @NotBlank(message = "Employee 2 ID is required")
+    @Positive(message = "Employee 2 ID must be a positive value")
     private Long employee2;
+
+    @NotBlank(message = "Total days worked is required")
+    @Positive(message = "Total days worked must be a positive value")
     private Long totalDaysWorked;
 
     // Constructors, getters, and setters

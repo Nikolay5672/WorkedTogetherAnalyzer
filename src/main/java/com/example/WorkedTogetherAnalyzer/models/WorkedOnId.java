@@ -1,11 +1,17 @@
 package com.example.WorkedTogetherAnalyzer.models;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 public class WorkedOnId implements Serializable {
-
+    @NotBlank(message = "Project ID is required")
+    @Positive(message = "Project ID must be a positive value")
     private Long projectId;
+    @NotBlank(message = "Employee ID is required")
+    @Positive(message = "Employee ID must be a positive value")
     private Long empId;
 
     // Constructors, getters, and setters
